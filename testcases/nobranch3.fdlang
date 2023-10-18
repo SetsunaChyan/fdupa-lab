@@ -1,0 +1,12 @@
+x = 1;
+
+x = x + x;
+x = x + x;
+x = x + x;
+x = x + x;
+x = x + x;
+x = x + x;
+
+check_interval(x, 64, 64);
+check_interval(x, 128, 255);
+check_interval(x, 1, 64);

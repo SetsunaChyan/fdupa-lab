@@ -1,0 +1,8 @@
+x = 255;
+
+while (x <= 255) {
+    x = x - 1;
+    check_interval(x, 0, 254);
+}
+
+check_interval(x, 0, 255);

@@ -1,0 +1,8 @@
+Line 6: YES; x in [0, 255]
+Line 7: YES; y in [0, 255]
+Line 12: YES; x in [100, 255]
+Line 13: YES; y in [0, 155]
+Line 18: YES; x in [200, 255]
+Line 19: YES; y in [0, 55]
+Line 24: YES; x in [255, 255]
+Line 25: YES; y in [0, 0]

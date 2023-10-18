@@ -1,0 +1,25 @@
+x = input();
+
+if (x == 1) {
+    x = 50;
+} else {
+    if (x == 2) {
+        x = 40;
+    } else {
+        if (x == 3) {
+            x = 30;
+        } else {
+            if (x == 4) {
+                x = 20;
+            } else {
+                x = 10;
+            }
+            check_interval(x, 10, 20);
+            check_interval(x, 20, 20);
+        }
+        check_interval(x, 10, 30);
+        check_interval(x, 30, 40);
+    }
+}
+
+check_interval(x, 10, 50);

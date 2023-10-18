@@ -1,0 +1,13 @@
+x = input();
+y = input();
+
+while (y >= 1) {
+    check_interval(y, 1, 10);
+    if (x <= 10) {
+        y = y + 1;
+    } else {
+        y = y - 1;
+    }
+}
+
+check_interval(y, 0, 11);

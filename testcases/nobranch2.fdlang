@@ -1,0 +1,24 @@
+x = 1;
+y = 2;
+
+tmp = x + y;
+x = tmp - x;
+y = tmp - x;
+
+check_interval(x, 1, 1);
+check_interval(y, 1, 1);
+check_interval(x, 2, 2);
+check_interval(y, 2, 2);
+check_interval(x, 3, 3);
+check_interval(y, 3, 3);
+
+tmp = x + y;
+x = tmp - x;
+y = tmp - x;
+
+check_interval(x, 1, 1);
+check_interval(y, 1, 1);
+check_interval(x, 2, 2);
+check_interval(y, 2, 2);
+check_interval(x, 3, 3);
+check_interval(y, 3, 3);

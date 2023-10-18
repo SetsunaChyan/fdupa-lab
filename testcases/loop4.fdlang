@@ -1,0 +1,23 @@
+fib0 = input();
+fib1 = input();
+
+while (fib0 >= 3) {
+    fib0 = fib0 - 3;
+}
+while (fib1 >= 3) {
+    fib1 = fib1 - 3;
+}
+
+check_interval(fib0, 0, 1);
+check_interval(fib1, 0, 1);
+check_interval(fib0, 0, 2);
+check_interval(fib1, 0, 2);
+
+while (i < 5) {
+    tmp = fib0 + fib1;
+    fib0 = fib1;
+    fib1 = tmp;
+    i = i + 1;
+}
+
+check_interval(fib1, 0, 26);

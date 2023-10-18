@@ -1,0 +1,25 @@
+x = input();
+y = input();
+
+x = x + y;
+
+check_interval(x, 0, 255);
+check_interval(y, 0, 255);
+
+x = x + 100;
+y = y - 100;
+
+check_interval(x, 100, 255);
+check_interval(y, 0, 155);
+
+x = x + 100;
+y = y - 100;
+
+check_interval(x, 200, 255);
+check_interval(y, 0, 55);
+
+x = x + 100;
+y = y - 100;
+
+check_interval(x, 255, 255);
+check_interval(y, 0, 0);
