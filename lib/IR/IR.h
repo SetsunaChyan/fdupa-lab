@@ -99,23 +99,23 @@ protected:
     void addPredecessor(Inst *inst) { predecessors.push_back(inst); }
 
 public:
-    virtual void dump(std::ostream &out) = 0;
+    virtual void dump(std::ostream &out) const = 0;
 
-    Value *getOperand(size_t id) {
+    Value *getOperand(size_t id) const {
         assert(id < operands.size() &&
                "The index cannot exceed the number of operands");
         return operands[id];
     }
 
-    size_t getOperandSize() { return operands.size(); }
+    size_t getOperandSize() const { return operands.size(); }
 
-    InstType getInstType() { return type; };
+    InstType getInstType() const { return type; };
 
-    size_t getLabel() { return label; }
+    size_t getLabel() const { return label; }
 
-    const std::vector<Inst *> &getSuccessors() { return successors; }
+    const std::vector<Inst *> &getSuccessors() const { return successors; }
 
-    const std::vector<Inst *> &getPredecessors() { return predecessors; }
+    const std::vector<Inst *> &getPredecessors() const { return predecessors; }
 
     virtual ~Inst() {
         for (Value *v : operands)
@@ -131,7 +131,7 @@ public:
         type = InstType::AddInst;
     }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 // operand0 = operand1 - operand2;
@@ -142,7 +142,7 @@ public:
         type = InstType::SubInst;
     }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 // operand0 = input();
@@ -152,7 +152,7 @@ public:
         type = InstType::InputInst;
     }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 // operand0 = operand1;
@@ -162,7 +162,7 @@ public:
         type = InstType::AssignInst;
     }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 // check_interval(operand0, operand1, operand2);
@@ -176,7 +176,7 @@ public:
         type = InstType::CheckIntervalInst;
     }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 
     void setLine(size_t line) { this->line = line; }
 
@@ -196,11 +196,11 @@ public:
         type = InstType::IfInst;
     }
 
-    Inst *getDestInst() { return dest; }
+    Inst *getDestInst() const { return dest; }
 
-    CmpOperator getCmpOperator() { return cmpop; }
+    CmpOperator getCmpOperator() const { return cmpop; }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 // goto dest;
@@ -213,14 +213,14 @@ public:
 
     Inst *getDestInst() { return dest; }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 class LabelInst : public Inst {
 public:
     LabelInst() { type = InstType::LabelInst; }
 
-    virtual void dump(std::ostream &out) override;
+    virtual void dump(std::ostream &out) const override;
 };
 
 using Insts = std::vector<Inst *>;

@@ -1,0 +1,18 @@
+i = 50;
+a = 100;
+b = 200;
+
+while(i > 0) {
+    i = i - 1;
+    a = a - 1;
+    b = b - 2;
+}
+
+c = a - b;
+
+check_interval(i, 0, 0);
+check_interval(a, 50, 50);
+check_interval(b, 0, 150);
+check_interval(b, 100, 100);
+check_interval(c, 0, 50);
+check_interval(c, 50, 50);

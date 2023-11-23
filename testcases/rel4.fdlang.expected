@@ -1,0 +1,6 @@
+Line 13: YES; i in [0, 0]
+Line 14: YES; a in [50, 50]
+Line 15: YES; b in [100, 100]
+Line 16: YES; b in [100, 100]
+Line 17: YES; c in [0, 0]
+Line 18:  NO; c in [0, 0]

@@ -29,7 +29,7 @@ static std::string labelPrefix(size_t label, size_t size = 3) {
 }
 
 // operand0 = operand1 + operand2;
-void AddInst::dump(std::ostream &out) {
+void AddInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     getOperand(0)->dump(out);
     out << " = ";
@@ -40,7 +40,7 @@ void AddInst::dump(std::ostream &out) {
 }
 
 // operand0 = operand1 - operand2;
-void SubInst::dump(std::ostream &out) {
+void SubInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     getOperand(0)->dump(out);
     out << " = ";
@@ -51,14 +51,14 @@ void SubInst::dump(std::ostream &out) {
 }
 
 // operand0 = input();
-void InputInst::dump(std::ostream &out) {
+void InputInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     getOperand(0)->dump(out);
     out << " = input();";
 }
 
 // operand0 = operand1;
-void AssignInst::dump(std::ostream &out) {
+void AssignInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     getOperand(0)->dump(out);
     out << " = ";
@@ -67,7 +67,7 @@ void AssignInst::dump(std::ostream &out) {
 }
 
 // check_interval(operand0, operand1, operand2);
-void CheckIntervalInst::dump(std::ostream &out) {
+void CheckIntervalInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     out << "check_interval(";
     getOperand(0)->dump(out);
@@ -79,7 +79,7 @@ void CheckIntervalInst::dump(std::ostream &out) {
 }
 
 // if operand0 cmpop operand1 then goto dest;
-void IfInst::dump(std::ostream &out) {
+void IfInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     out << "if ";
     getOperand(0)->dump(out);
@@ -89,9 +89,11 @@ void IfInst::dump(std::ostream &out) {
 }
 
 // goto dest;
-void GotoInst::dump(std::ostream &out) {
+void GotoInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
     out << "goto L" << dest->getLabel() << ";";
 }
 
-void LabelInst::dump(std::ostream &out) { out << labelPrefix(getLabel()); }
+void LabelInst::dump(std::ostream &out) const {
+    out << labelPrefix(getLabel());
+}

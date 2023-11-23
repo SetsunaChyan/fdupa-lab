@@ -6,6 +6,7 @@
 
 #include "analysis/intervalAnalysis.h"
 #include "analysis/modelChecker.h"
+#include "analysis/relationalNumericalAnalysis.h"
 
 #include "IR/IRBuilder.h"
 
@@ -38,6 +39,7 @@ int main(int argc, char *argv[]) {
                      "[-format] "
                      "[-modelchecker] "
                      "[-interval-analysis] "
+                     "[-zone-analysis] "
                      "[-dumpir] "
                      "path-to-src-file"
                   << std::endl;
@@ -55,6 +57,7 @@ int main(int argc, char *argv[]) {
     bool doModelChecker = options.count("-modelchecker");
     bool doDumpir = options.count("-dumpir");
     bool doIntervalAnalysis = options.count("-interval-analysis");
+    bool doZoneAnalysis = options.count("-zone-analysis");
 
     std::string src = readSrc(filepath);
     fdlang::Scanner scanner(src);
@@ -82,7 +85,7 @@ int main(int argc, char *argv[]) {
         modelChecker.dumpResult(std::cout);
     }
 
-    if (doIntervalAnalysis || doDumpir) {
+    if (doIntervalAnalysis || doZoneAnalysis || doDumpir) {
         fdlang::IR::IRBuilder irBuilder(root);
         fdlang::IR::Insts insts = irBuilder.build();
 
@@ -95,6 +98,12 @@ int main(int argc, char *argv[]) {
 
         if (doIntervalAnalysis) {
             fdlang::analysis::IntervalAnalysis analysis(insts);
+            analysis.run();
+            analysis.dumpResult(std::cout);
+        }
+
+        if (doZoneAnalysis) {
+            fdlang::analysis::RelationalNumericalAnalysis analysis(insts);
             analysis.run();
             analysis.dumpResult(std::cout);
         }

@@ -1,7 +1,8 @@
-#ifndef ANALYSIS_INTERVALANALYSIS_H
-#define ANALYSIS_INTERVALANALYSIS_H
+#ifndef ANALYSIS_RELATIONALNUMERICALANALYSIS_H
+#define ANALYSIS_RELATIONALNUMERICALANALYSIS_H
 
 #include "dataflowAnalysis.h"
+#include "zoneDomain.h"
 
 #include <algorithm>
 #include <map>
@@ -9,7 +10,7 @@
 
 namespace fdlang::analysis {
 
-class IntervalAnalysis : public DataflowAnalysis {
+class RelationalNumericalAnalysis : public DataflowAnalysis {
 public:
     enum class ResultType { YES, NO, UNREACHABLE };
 
@@ -17,9 +18,9 @@ private:
     std::map<IR::CheckIntervalInst *, ResultType> results;
 
 public:
-    IntervalAnalysis(const IR::Insts &insts) : DataflowAnalysis(insts) {}
+    RelationalNumericalAnalysis(const IR::Insts &insts)
+        : DataflowAnalysis(insts) {}
 
-    // DO NOT MODIFY THIS FUNCTION
     void dumpResult(std::ostream &out) override {
         using Location = std::pair<size_t, size_t>;
 
@@ -45,9 +46,19 @@ public:
     void run() override;
 
 private:
-    /**
-     * Your code starts here
-     */
+    using States = ZoneDomain;
+
+    // label -> states
+    std::map<size_t, States> inputStates;
+
+    States transferAssignment(const IR::Inst *inst, States &input);
+    States transferIdentity(const IR::Inst *inst, States &input);
+    States transferIfStmt(const IR::IfInst *inst, States &input, bool branch);
+
+    // x join into y
+    bool joinInto(const States &x, States &y);
+
+    void dumpStates(std::ostream &out, States &states);
 };
 
 } // namespace fdlang::analysis

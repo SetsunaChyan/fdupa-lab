@@ -6,8 +6,8 @@
 #include "fdlang/scanner.h"
 #include "fdlang/sema.h"
 
-#include "analysis/intervalAnalysis.h"
 #include "analysis/modelChecker.h"
+#include "analysis/relationalNumericalAnalysis.h"
 
 #include "IR/IRBuilder.h"
 
@@ -90,14 +90,14 @@ void check(std::string &filepath) {
     fdlang::IR::IRBuilder irBuilder(root);
     fdlang::IR::Insts insts = irBuilder.build();
 
-    fdlang::analysis::IntervalAnalysis analysis(insts);
+    fdlang::analysis::RelationalNumericalAnalysis analysis(insts);
     analysis.run();
     analysis.dumpResult(result);
 
     compare(result.str(), expected);
 }
 
-TEST(IntervalAnalysis, RunAll) {
+TEST(RelationalNumericalAnalysis, RunAll) {
 
     std::vector<std::string> files = {
         "branch1.fdlang",   "branch2.fdlang",   "corner.fdlang",

@@ -1,0 +1,15 @@
+i = input();
+if(i > 100) {
+    i = 100;
+} else {
+    nop;
+}
+
+j = i + 20;
+
+while(i > 0) {
+    i = i - 1;
+    j = j - 1;
+}
+
+check_interval(j, 20, 20);
