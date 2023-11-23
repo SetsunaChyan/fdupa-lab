@@ -12,7 +12,7 @@ $$
 $$
 如果程序仅包含两个变量，那它可以看成是二维平面上的一个矩形
 
-<img src=".\Pics\interval_domain.png" alt="interval_domain" style="zoom:50%;" />
+<img src=".\pics\interval_domain.png" alt="interval_domain" style="zoom:50%;" />
 
 但区间抽象域的表达能力较弱，比如以下例子
 
@@ -36,7 +36,7 @@ $$
 
 对比区间抽象域，如果程序仅包含两个变量，那它可以看成是二维平面上的这样一个区域
 
-<img src=".\Pics\zone_domain.png" alt="zone_domain" style="zoom:50%;" />
+<img src=".\pics\zone_domain.png" alt="zone_domain" style="zoom:50%;" />
 
 上述例子在采用 Zone 抽象域后就能不产生误报
 
