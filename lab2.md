@@ -41,13 +41,39 @@ $$
 上述例子在采用 Zone 抽象域后就能不产生误报
 
 ```c
+// j = [0, 0]
+// i = [0, 0]
 i = input();
+// j = [0, 0]
+// i = [0, 255]
+// j - i <= 255
+// i - j <= 0
 j = i;
+// j = [0, 255]
+// i = [0, 255]
+// j - i <= 0
+// i - j <= 0
 while(i > 0) {
+    // j = [1, 255]
+    // i = [1, 255]
+    // j - i <= 0
+    // i - j <= 0
     i = i - 1;
+    // j = [1, 255]
+    // i = [0, 254]
+    // j - i <= -1
+    // i - j <= 1
     j = j - 1;
+    // j = [0, 254]
+    // i = [0, 254]
+    // j - i <= 0
+    // i - j <= 0
 }
-check_interval(j, 0, 0); // fail when using interval domain
+// j = [0, 0]
+// i = [0, 0]
+// j - i <= 0
+// i - j <= 0
+check_interval(j, 0, 0); // ok when using zone domain
 ```
 
 
