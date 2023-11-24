@@ -209,7 +209,7 @@ Zone 抽象域的实现在 `analysis/zoneDomain.h` 与 `analysis/zoneDomain.cpp`
 + **Normalization**（`Normalization` 函数）
 
 + **Emptiness Testing**（`isEmpty` 函数）
-+ **Filter**（`filter` 函数，仅需要处理形如 $x - y \leq c$ 的条件，其中 $x$ 或 $y$ 必有一个为 $0$）
++ **Filter**（`filter` 函数，仅需要处理形如 $x - y \leq c$ 的条件，其中 $x$ 或 $y$ 有可能为常量 $0$）
 + **Assignment** 剩余两种情况的处理（`assign_case2`、`assign_case3` 函数，分别对应 $x \leftarrow y + c$ 与 $x \leftarrow [l, r]$）。
 
 完成后你可以通过运行 `build/test/zoneAnalysisTest` 来检查正确率与召回率，使用方法同 Lab1。
