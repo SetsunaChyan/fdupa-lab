@@ -393,6 +393,7 @@ ZoneDomain ZoneDomain::assign_case3(const std::string &x, long long l,
                                     long long r) const {
     l = std::max(l, 0ll);
     r = std::min(r, 255ll);
+    ZoneDomain ret;
 
     // todo: (about 4 lines)
 
