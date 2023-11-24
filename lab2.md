@@ -86,8 +86,6 @@ Zone 通常用 Difference Bound Matrices(DBMs) 来描述，假设程序中有 $n
 + $m_{ij} = + \infty$ 表示 $V_j - V_i$ 是无界的，即没有约束；
 + $m_{i0}, m_{0j}$ 用来描述一元的约束：$-V_i \leq m_{i0}, V_j \leq m_{0j}$。
 
-你可以把 $m$ 看成这 $n+1$ 个点构成的有向带权图的邻接矩阵，其中每条边是 $V_i \stackrel{m_{ij}}{\longrightarrow} V_j$。
-
 不一样的 DBM 有可能描述的区域是一样的，比如
 $$
 \begin{cases}
