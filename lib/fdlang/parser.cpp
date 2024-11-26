@@ -1,12 +1,13 @@
 #include "parser.h"
 #include "errorHandler.h"
+#include "fdlang/AST.h"
 #include "token.h"
 
 #include <assert.h>
 
 using namespace fdlang;
 
-ASTNode *Parser::parse() { return parseStmts(); }
+ASTNode *Parser::parse() { return parseFunctions(); }
 
 const Token &Parser::advance() {
     if (isAtEnd()) {
@@ -56,6 +57,8 @@ ASTNode *Parser::parseStmt() {
         return parseCheckIntervalStmt();
     case TokenType::NOP:
         return parseNopStmt();
+    case TokenType::CALL:
+        return parseCallStmt();
     default:
         hasError = true;
         error(token.line, "Parsing error, got " + token.lexeme);
@@ -185,6 +188,77 @@ ASTNode *Parser::parseCond() {
     const Token &rightOperand = advance();
 
     return new Cond(label++, leftOperand, op, rightOperand);
+}
+
+ASTNode *Parser::parseCallStmt() {
+    const Token &funcName = advance();
+    if (!consume(TokenType::LEFT_PAREN))
+        return nullptr;
+
+    std::vector<Token> args;
+    TokenType type = tokens[current].type;
+    while (type != TokenType::RIGHT_PAREN) {
+        if (type == TokenType::COMMA) {
+            if (!consume(TokenType::COMMA))
+                return nullptr;
+            type = tokens[current].type;
+            continue;
+        }
+        args.push_back(advance());
+        type = tokens[current].type;
+    }
+
+    if (!consume(TokenType::RIGHT_PAREN))
+        return nullptr;
+    if (!consume(TokenType::SEMICOLON))
+        return nullptr;
+
+    return new CallStmt(label++, funcName, args);
+}
+
+ASTNode *Parser::parseFunctions() {
+    FunctionNodes *functions = new FunctionNodes(label++);
+    while (!isAtEnd() && peek().type != TokenType::RIGHT_BRACE && !hasError) {
+        functions->addChild(parseFunction());
+    }
+    functions->addCallee();
+
+    return functions;
+}
+
+ASTNode *Parser::parseFunction() {
+    if (!consume(TokenType::FUNCTION))
+        return nullptr;
+
+    const Token &funcName = advance();
+
+    if (!consume(TokenType::LEFT_PAREN))
+        return nullptr;
+    std::vector<Token> args;
+    TokenType type = tokens[current].type;
+    while (type != TokenType::RIGHT_PAREN) {
+        if (type == TokenType::COMMA) {
+            if (!consume(TokenType::COMMA))
+                return nullptr;
+            type = tokens[current].type;
+            continue;
+        }
+        args.push_back(advance());
+        type = tokens[current].type;
+    }
+
+    if (!consume(TokenType::RIGHT_PAREN))
+        return nullptr;
+    if (!consume(TokenType::LEFT_BRACE))
+        return nullptr;
+
+    ASTNode *body = parseStmts();
+    if (hasError)
+        return nullptr;
+    if (!consume(TokenType::RIGHT_BRACE))
+        return nullptr;
+
+    return new FunctionNode(label++, funcName, args, body);
 }
 
 bool Parser::hadError() { return hasError; }

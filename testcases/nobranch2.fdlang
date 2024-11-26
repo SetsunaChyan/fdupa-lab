@@ -1,3 +1,4 @@
+function main(){
 x = 1;
 y = 2;
 
@@ -22,3 +23,4 @@ check_interval(x, 2, 2);
 check_interval(y, 2, 2);
 check_interval(x, 3, 3);
 check_interval(y, 3, 3);
+}

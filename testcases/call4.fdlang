@@ -1,0 +1,26 @@
+function main(){
+    a = 20;
+    call callee1(a);
+    call callee2(a);
+}
+
+function callee1(m){
+    m = m + 1;
+    check_interval(m, 21, 21);
+}
+
+function callee2(m){
+    m = m - 1;
+    n = 5;
+    check_interval(m, 21, 21);
+    call callee3(m,n);
+}
+
+function callee3(x,y){
+    x = x + 5;
+    if(y < 9){
+         check_interval(x, 24, 24);
+    }else{
+        check_interval(y, 20, 20);
+    }
+}

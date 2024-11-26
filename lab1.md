@@ -67,32 +67,36 @@ x = 1 + 3 - 2;
 该语言包含两种控制语句，分别是 `if` 语句和 `while` 语句，以一段简单的程序为例
 
 ```c
-x = input();
-y = input();
+function case1(){
+    x = input();
+    y = input();
 
-while (y >= 1) {
-    check_interval(y, 1, 10);
-    if (x <= 10) {
-        y = y + 1;
-    } else {
-        y = y - 1;
+    while (y >= 1) {
+        check_interval(y, 1, 10);
+        if (x <= 10) {
+            y = y + 1;
+        } else {
+            y = y - 1;
+        }
     }
-}
 
-check_interval(y, 0, 11);
+    check_interval(y, 0, 11);
+}
 ```
 
 在使用 `while` 循环语句和 `if` 分支语句时，大括号不能省略，`else` 分支不能省略。为了分析的方便，判断条件左边一定是一个变量，右边一定是整数常量，比较运算符包含 `==`、`>=`、`>`、`<=`、`<`。
 
-该语言目前没有函数调用，`input()` 可以看作是一个关键字，表示用户输入一个 $[0, 255]$ 内任意的一个整数；`check_interval(y, 0, 11)` 表示检查变量 $y$ 在该程序点的值是否在区间 $[0, 11]$ 内。
+本 Lab不涉及函数调用，`input()` 可以看作是一个关键字，表示用户输入一个 $[0, 255]$ 内任意的一个整数；`check_interval(y, 0, 11)` 表示检查变量 $y$ 在该程序点的值是否在区间 $[0, 11]$ 内。
 
 除此之外你可以使用 `nop` 语句，功能与 python 中的 `pass` 语句一样，例如
 
 ```c
-if (x >= 5) {
-    x = x - 5;
-} else {
-    nop;
+function case2(){
+    if (x >= 5) {
+        x = x - 5;
+    } else {
+        nop;
+    }
 }
 ```
 
@@ -105,29 +109,36 @@ if (x >= 5) {
 IR 帮助我们把原程序简化成了一个线性的结构，下面展示一段源代码和其对应的 IR
 
 ```c
-x = 1;
+function case3(){
+    x = 1;
 
-while (x < 10) {
-    y = y + x;
-    x = x + 1;
-    check_interval(x, 0, 9);
+    while (x < 10) {
+        y = y + x;
+        x = x + 1;
+        check_interval(x, 0, 9);
+    }
+
+    check_interval(y, 45, 45);
 }
-
-check_interval(y, 45, 45);
 ```
 
 ```
-L0 :  x = 1;
+L0 :  function case3(){
 L1 :  
-L2 :  if x < 10 then goto L4;
-L3 :  goto L9;
-L4 :  
-L5 :  y = y + x;
-L6 :  x = x + 1;
-L7 :  check_interval(x, 0, 9);
-L8 :  goto L1;
-L9 :  
-L10:  check_interval(y, 45, 45);
+L2 :  x = 1;
+L3 :  
+L4 :  if x < 10 then goto L6;
+L5 :  goto L11;
+L6 :  
+L7 :  y = y + x;
+L8 :  x = x + 1;
+L9 :  check_interval(x, 0, 9);
+L10:  goto L3;
+L11:  
+L12:  check_interval(y, 45, 45);
+L13:  
+L14:  }
+L15:
 ```
 
 IR 中变量和整数常量被统称为 `Value` ；指令（语句）为 `Inst` ，分为以下几类：
@@ -147,6 +158,9 @@ IR 中变量和整数常量被统称为 `Value` ；指令（语句）为 `Inst` 
 +   `GotoInst` 无条件跳转指令：`goto dest;`
 
 +   `LabelInst` 标签
+  
++   `CallInst` 函数调用指令：`call function ( param0,param1, ... );`
+
 
 更详细的内容可以阅读源码 `lib/IR/IR.h`。
 
@@ -240,6 +254,8 @@ Cond       := IDENTIFIER < NUMBER
             | IDENTIFIER >= NUMBER
             | IDENTIFIER <= NUMBER
             | IDENTIFIER == NUMBER
+            
+Args := ε | IDENTIFIER | IDENTIFIER , Args            
 
 BinaryAssignStmt := 
               IDENTIFIER = Value + Value ;
@@ -257,16 +273,23 @@ IfStmt     := if ( Cond ) { Stmts } else { Stmts }
 
 WhileStmt  := while ( Cond ) { Stmts }
 
-CheckStmt  := check_interval ( IDENTIFIER , NUMBER , NUMBER )
+CallStmt   := call IDENTIFIER ( Args ) ;
 
-NopStmt    := nop 
+CheckStmt  := check_interval ( IDENTIFIER , NUMBER , NUMBER ) ;
+
+NopStmt    := nop ;
 
 Stmt       := AssignStmt
             | IfStmt
             | WhileStmt
             | CheckStmt
             | NopStmt
+            | CallStmt
 
 Stmts      := Stmt^+
+
+FunctionNode    := function IDENTIFIER ( Args ) { Stmts }
+
+FunctionNodes   := FunctionNode^+
 ```
 

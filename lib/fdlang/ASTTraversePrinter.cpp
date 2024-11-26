@@ -1,4 +1,5 @@
 #include "ASTTraversePrinter.h"
+#include "fdlang/AST.h"
 
 using namespace fdlang;
 
@@ -74,4 +75,50 @@ void ASTTraversePrinter::visit(CheckStmt *node) {
 void ASTTraversePrinter::visit(NopStmt *node) {
     printIndent();
     out << "nop" << std::endl;
+}
+
+void ASTTraversePrinter::visit(CallStmt *node) {
+    printIndent();
+    out << "call" << " ";
+    out << node->calleeName.lexeme << " (";
+    for (int i = 0; i < node->args.size(); i++) {
+        auto param = node->args[i];
+        if (i == node->args.size() - 1) {
+            out << param.lexeme << ");";
+
+        } else {
+            out << param.lexeme << ", ";
+        }
+    }
+    out << std::endl;
+}
+
+void ASTTraversePrinter::visit(FunctionNodes *node) {
+    for (ASTNode *child : node->children) {
+        child->accept(this);
+    }
+}
+
+void ASTTraversePrinter::visit(FunctionNode *node) {
+    printIndent();
+    out << "function " << node->funcName.lexeme << "(";
+    if (node->args.size() == 0)
+        out << "){" << std::endl;
+    else {
+        for (int i = 0; i < node->args.size(); i++) {
+            auto arg = node->args[i];
+            if (i == node->args.size() - 1) {
+                out << arg.lexeme << "){" << std::endl;
+
+            } else {
+                out << arg.lexeme << ", ";
+            }
+        }
+    }
+
+    ident++;
+    node->body->accept(this);
+    ident--;
+    printIndent();
+    out << "}" << std::endl << std::endl;
 }

@@ -1,3 +1,4 @@
+function main(){
 x = 100;
 
 while (i <= 10) {
@@ -13,3 +14,4 @@ while (i <= 10) {
 check_interval(x, 89, 111);
 check_interval(x, 90, 110);
 check_interval(x, 91, 109);
+}

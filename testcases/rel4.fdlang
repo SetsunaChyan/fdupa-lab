@@ -1,3 +1,4 @@
+function main(){
 i = 50;
 a = 100;
 b = 200;
@@ -16,3 +17,4 @@ check_interval(b, 0, 150);
 check_interval(b, 100, 100);
 check_interval(c, 0, 50);
 check_interval(c, 50, 50);
+}

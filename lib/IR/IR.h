@@ -1,12 +1,15 @@
 #ifndef IR_IR_H
 #define IR_IR_H
 
+#include "fdlang/AST.h"
 #include "fdlang/token.h"
 
 #include <any>
 #include <assert.h>
+#include <cstddef>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace fdlang::IR {
@@ -30,7 +33,8 @@ enum class InstType {
     CheckIntervalInst,
     IfInst,
     GotoInst,
-    LabelInst
+    LabelInst,
+    CallInst
 };
 
 std::string getCmpOperatorSpelling(CmpOperator op);
@@ -81,13 +85,16 @@ public:
         }
     }
 };
-
+class Function;
 class Inst {
+    friend class Function;
+
 protected:
     InstType type;
     size_t label;
     std::vector<Value *> operands;
     std::vector<Inst *> successors, predecessors;
+    Function *func;
     Inst(const std::vector<Value *> &ops = {}) : operands(ops) {}
 
     friend class IRBuilder;
@@ -97,6 +104,9 @@ protected:
     void addSuccessor(Inst *inst) { successors.push_back(inst); }
 
     void addPredecessor(Inst *inst) { predecessors.push_back(inst); }
+
+    void setParent(Function *func) { func = func; }
+    Function *getParent() { return func; }
 
 public:
     virtual void dump(std::ostream &out) const = 0;
@@ -122,6 +132,8 @@ public:
             delete v;
     }
 };
+
+using Insts = std::vector<Inst *>;
 
 // operand0 = operand1 + operand2;
 class AddInst : public Inst {
@@ -223,7 +235,68 @@ public:
     virtual void dump(std::ostream &out) const override;
 };
 
-using Insts = std::vector<Inst *>;
+class Function {
+public:
+    std::string funcName;
+    std::unordered_map<size_t, Inst *> label2Inst;
+
+private:
+    size_t beginLabel, endLabel;
+    std::vector<Value *> args;
+    Insts insts;
+    bool isRootFunc;
+    LabelInst *endFunctionLable;
+
+public:
+    Function(std::string funcName, std::vector<Value *> args, Insts insts)
+        : funcName(funcName), args(args), insts(insts) {
+        isRootFunc = true;
+        endFunctionLable = new LabelInst();
+    }
+
+    ~Function() { delete endFunctionLable; }
+
+    void dump(std::ostream &out) const;
+
+    void setBeginLabel(size_t l) { beginLabel = l; }
+    size_t getBeginLabel() const { return beginLabel; }
+
+    void setEndLabel(size_t l) {
+        endLabel = l;
+        endFunctionLable->setLabel(l + 1);
+    }
+    size_t getEndLabel() const { return endLabel; }
+
+    void setInsts(Insts instructions) { insts = instructions; }
+    Insts &getInsts() { return insts; }
+
+    void setRoot(bool isRoot) { isRootFunc = isRoot; }
+    bool isRoot() { return isRootFunc; }
+
+    bool isArg(Value *value);
+    std::vector<Value *> getArgs();
+};
+
+using Functions = std::vector<Function *>;
+class CallInst : public Inst {
+private:
+    std::vector<Value *> args;
+    Function *callee;
+    std::string calleeName;
+
+public:
+    CallInst(std::string calleeName, std::vector<Value *> args)
+        : calleeName(calleeName), args(args) {
+        type = InstType::CallInst;
+    }
+
+    virtual void dump(std::ostream &out) const override;
+
+    void setCallee(Function *calleeFunction);
+    Function *getCallee();
+    std::string getCalleeName();
+    std::vector<Value *> getArgs();
+};
 
 } // namespace fdlang::IR
 

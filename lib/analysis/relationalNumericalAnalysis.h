@@ -1,6 +1,7 @@
 #ifndef ANALYSIS_RELATIONALNUMERICALANALYSIS_H
 #define ANALYSIS_RELATIONALNUMERICALANALYSIS_H
 
+#include "IR/IR.h"
 #include "dataflowAnalysis.h"
 #include "zoneDomain.h"
 
@@ -18,8 +19,8 @@ private:
     std::map<IR::CheckIntervalInst *, ResultType> results;
 
 public:
-    RelationalNumericalAnalysis(const IR::Insts &insts)
-        : DataflowAnalysis(insts) {}
+    RelationalNumericalAnalysis(const IR::Functions &funcs)
+        : DataflowAnalysis(funcs) {}
 
     void dumpResult(std::ostream &out) override {
         using Location = std::pair<size_t, size_t>;

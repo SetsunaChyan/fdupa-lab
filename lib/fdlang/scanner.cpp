@@ -1,5 +1,6 @@
 #include "scanner.h"
 #include "errorHandler.h"
+#include "fdlang/token.h"
 
 #include <cctype>
 #include <cstdlib>
@@ -12,7 +13,9 @@ const std::unordered_map<std::string, TokenType> Scanner::keywords = {
     {"while", TokenType::WHILE},
     {"input", TokenType::CALL_INPUT},
     {"check_interval", TokenType::CALL_CHECK_INTERVAL},
-    {"nop", TokenType::NOP}};
+    {"nop", TokenType::NOP},
+    {"call", TokenType::CALL},
+    {"function", TokenType::FUNCTION}};
 
 std::vector<Token> Scanner::scanTokens() {
     while (!isAtEnd()) {

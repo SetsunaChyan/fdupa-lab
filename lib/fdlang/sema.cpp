@@ -1,6 +1,7 @@
 #include "sema.h"
 #include "errorHandler.h"
 #include "token.h"
+#include <iostream>
 
 using namespace fdlang;
 
@@ -56,6 +57,25 @@ void Sema::visit(CheckStmt *node) {
 }
 
 void Sema::visit(NopStmt *node) {}
+
+void Sema::visit(CallStmt *node) {
+    for (auto param : node->args) {
+        checkValue(param);
+    }
+}
+
+void Sema::visit(FunctionNodes *node) {
+    for (ASTNode *child : node->children) {
+        child->accept(this);
+    }
+}
+
+void Sema::visit(FunctionNode *node) {
+    for (auto param : node->args) {
+        checkValue(param);
+    }
+    node->body->accept(this);
+}
 
 bool Sema::checkVariable(const Token &token) {
     if (token.type != TokenType::IDENTIFIER) {

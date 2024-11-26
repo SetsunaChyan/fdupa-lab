@@ -1,5 +1,6 @@
 #include "IR.h"
 #include <string>
+#include <vector>
 
 using namespace fdlang::IR;
 
@@ -96,4 +97,62 @@ void GotoInst::dump(std::ostream &out) const {
 
 void LabelInst::dump(std::ostream &out) const {
     out << labelPrefix(getLabel());
+}
+
+void CallInst::dump(std::ostream &out) const {
+    out << labelPrefix(getLabel());
+    out << "call ";
+    out << calleeName << "(";
+    for (int i = 0; i < args.size(); i++) {
+        if (i == args.size() - 1) {
+            args[i]->dump(out);
+            out << ")" << ";";
+        } else {
+            args[i]->dump(out);
+            out << ", ";
+        }
+    }
+}
+
+void CallInst::setCallee(Function *calleeFunction) { callee = calleeFunction; }
+Function *CallInst::getCallee() { return callee; }
+std::string CallInst::getCalleeName() { return calleeName; }
+std::vector<Value *> CallInst::getArgs() { return args; }
+
+bool Function::isArg(Value *value) {
+    auto val = value->getAsVariable();
+    for (auto arg : args) {
+        auto argVal = arg->getAsVariable();
+        if (val == argVal)
+            return true;
+    }
+    return false;
+}
+
+std::vector<Value *> Function::getArgs() { return args; }
+
+void Function::dump(std::ostream &out) const {
+    out << std::unitbuf;
+    out << labelPrefix(getBeginLabel());
+    out << "function " << funcName << "(";
+    if (args.empty()) {
+        out << ")" << "{" << std::endl;
+    }
+    for (int i = 0; i < args.size(); i++) {
+        if (i == args.size() - 1) {
+            args[i]->dump(out);
+            out << ")" << "{" << std::endl;
+        } else {
+            args[i]->dump(out);
+            out << ", ";
+        }
+    }
+    for (auto inst : insts) {
+        inst->dump(out);
+        std::cout << std::endl;
+    }
+    out << labelPrefix(getEndLabel());
+    out << "}" << std::endl;
+    endFunctionLable->dump(out);
+    out << std::nounitbuf;
 }

@@ -51,6 +51,12 @@ public:
 
     ASTNode *parseCond();
 
+    ASTNode *parseCallStmt();
+
+    ASTNode *parseFunctions();
+
+    ASTNode *parseFunction();
+
     bool hadError();
 };
 

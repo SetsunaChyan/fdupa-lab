@@ -1,0 +1,9 @@
+function main(){
+    a = 20;
+    call callee(a);
+}
+
+function callee(m){
+    m = m + 1;
+    check_interval(m, 21, 21);
+}

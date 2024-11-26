@@ -19,6 +19,9 @@ private:
     void visit(WhileStmt *node) override;
     void visit(CheckStmt *node) override;
     void visit(NopStmt *node) override;
+    void visit(CallStmt *node) override;
+    void visit(FunctionNodes *node) override;
+    void visit(FunctionNode *node) override;
 
     bool checkVariable(const Token &token);
     bool checkCondOp(const Token &token);

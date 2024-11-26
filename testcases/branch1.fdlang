@@ -1,3 +1,4 @@
+function main(){
 x = input();
 
 if (x == 1) {
@@ -23,3 +24,4 @@ if (x == 1) {
 }
 
 check_interval(x, 10, 50);
+}

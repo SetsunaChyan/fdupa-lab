@@ -49,8 +49,12 @@ std::string fdlang::getTokenSpelling(TokenType type) {
         return "CALL_INPUT";
     case TokenType::CALL_CHECK_INTERVAL:
         return "CALL_CHECK_INTERVAL";
+    case TokenType::CALL:
+        return "CALL";
     case TokenType::NOP:
         return "NOP";
+    case TokenType::FUNCTION:
+        return "FUNCTION";
     case TokenType::END_OF_FILE:
         return "END_OF_FILE";
     default:
@@ -93,6 +97,16 @@ bool Token::isValue() const {
     switch (type) {
     case TokenType::IDENTIFIER:
     case TokenType::NUMBER:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
+
+bool Token::isFunction() const {
+    switch (type) {
+    case TokenType::FUNCTION:
         return true;
     default:
         break;

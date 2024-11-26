@@ -1,3 +1,4 @@
+function main(){
 i = input();
 j = i;
 
@@ -7,3 +8,4 @@ while(i > 0) {
 }
 
 check_interval(j, 0, 0);
+}

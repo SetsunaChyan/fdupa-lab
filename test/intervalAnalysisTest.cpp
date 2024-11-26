@@ -88,9 +88,9 @@ void check(std::string &filepath) {
     EXPECT_TRUE(sema.check());
 
     fdlang::IR::IRBuilder irBuilder(root);
-    fdlang::IR::Insts insts = irBuilder.build();
+    fdlang::IR::Functions funcs = irBuilder.build();
 
-    fdlang::analysis::IntervalAnalysis analysis(insts);
+    fdlang::analysis::IntervalAnalysis analysis(funcs);
     analysis.run();
     analysis.dumpResult(result);
 

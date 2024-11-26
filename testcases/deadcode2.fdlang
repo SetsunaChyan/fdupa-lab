@@ -1,3 +1,4 @@
+function main(){
 x = 255;
 
 while (x <= 255) {
@@ -6,3 +7,4 @@ while (x <= 255) {
 }
 
 check_interval(x, 0, 255);
+}

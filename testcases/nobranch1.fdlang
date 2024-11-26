@@ -1,3 +1,4 @@
+function main(){
 x = input();
 y = input();
 
@@ -23,3 +24,4 @@ y = y - 100;
 
 check_interval(x, 255, 255);
 check_interval(y, 0, 0);
+}

@@ -7,6 +7,7 @@
 #include <bitset>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 using namespace fdlang;
 using namespace fdlang::analysis;
@@ -31,6 +32,9 @@ void NaiveModelChecker::evaluate(Stmts *node, Envs &envs) {
             break;
         case ASTNodeType::NOP_STMT:
             evaluate((NopStmt *)child, envs);
+            break;
+        case ASTNodeType::CALL_STMT:
+            evaluate((CallStmt *)child, envs);
             break;
         case ASTNodeType::STMTS:
             evaluate((Stmts *)child, envs);
@@ -183,11 +187,47 @@ void NaiveModelChecker::evaluate(CheckStmt *node, Envs &envs) {
 
 void NaiveModelChecker::evaluate(NopStmt *node, Envs &envs) {}
 
+void NaiveModelChecker::evaluate(CallStmt *node, Envs &envs) {
+    Envs newEnvs;
+    for (auto env : envs) {
+        Env newEnv;
+        for (int i = 0; i < node->args.size(); i++) {
+            newEnv[std::to_string(i)] = env[node->args[i].lexeme];
+        }
+        newEnvs.insert(newEnv);
+    }
+    evaluate(node->callee, newEnvs);
+}
+
+void NaiveModelChecker::evaluate(FunctionNodes *node, Envs &envs) {
+    for (auto child : node->children) {
+        auto function = dynamic_cast<FunctionNode *>(child);
+        if (function->isRoot())
+            evaluate((FunctionNode *)child, envs);
+    }
+}
+
+void NaiveModelChecker::evaluate(FunctionNode *node, Envs &envs) {
+    if (node->isRoot()) {
+        evaluate((Stmts *)node->body, envs);
+    } else {
+        Envs newEnvs;
+        for (auto env : envs) {
+            Env newEnv;
+            for (int i = 0; i < node->args.size(); i++) {
+                newEnv[node->args[i].lexeme] = env[std::to_string(i)];
+            }
+            newEnvs.insert(newEnv);
+        }
+        evaluate((Stmts *)node->body, newEnvs);
+    }
+}
+
 void NaiveModelChecker::run() {
     root->accept(&info);
     Env initEnv;
     Envs initEnvs = {initEnv};
-    evaluate((Stmts *)root, initEnvs);
+    evaluate((FunctionNodes *)root, initEnvs);
 }
 
 void NaiveModelChecker::dumpResult(std::ostream &out) {

@@ -1,13 +1,14 @@
 #include "gtest/gtest.h"
 
+#include "IR/IR.h"
 #include "fdlang/AST.h"
 #include "fdlang/ASTTraversePrinter.h"
 #include "fdlang/parser.h"
 #include "fdlang/scanner.h"
 #include "fdlang/sema.h"
 
+#include "analysis/interAnalysis.h"
 #include "analysis/modelChecker.h"
-#include "analysis/relationalNumericalAnalysis.h"
 
 #include "IR/IRBuilder.h"
 
@@ -90,22 +91,21 @@ void check(std::string &filepath) {
     fdlang::IR::IRBuilder irBuilder(root);
     fdlang::IR::Functions funcs = irBuilder.build();
 
-    fdlang::analysis::RelationalNumericalAnalysis analysis(funcs);
+    fdlang::analysis::InterAnalysis analysis(funcs);
     analysis.run();
     analysis.dumpResult(result);
 
     compare(result.str(), expected);
 }
 
-TEST(RelationalNumericalAnalysis, RunAll) {
+TEST(InterAnalysis, RunAll) {
 
     std::vector<std::string> files = {
-        "branch1.fdlang",   "branch2.fdlang",   "corner.fdlang",
-        "deadcode1.fdlang", "deadcode2.fdlang", "loop1.fdlang",
-        "loop2.fdlang",     "loop3.fdlang",     "loop4.fdlang",
-        "loop5.fdlang",     "nobranch1.fdlang", "nobranch2.fdlang",
-        "nobranch3.fdlang", "rel1.fdlang",      "rel2.fdlang",
-        "rel3.fdlang",      "rel4.fdlang"};
+        "call1.fdlang",
+        "call2.fdlang",
+        "call3.fdlang",
+        "call4.fdlang",
+    };
 
     for (auto &filepath : files)
         check(filepath);

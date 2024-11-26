@@ -36,6 +36,9 @@ enum class TokenType {
     CALL_INPUT,
     CALL_CHECK_INTERVAL,
     NOP,
+    CALL,
+    FUNCTION,
+    END_OF_FUNCTION,
 
     END_OF_FILE
 };
@@ -57,6 +60,8 @@ struct Token {
     bool isArithmeticOp() const;
 
     bool isValue() const;
+
+    bool isFunction() const;
 };
 
 std::string getTokenSpelling(TokenType type);

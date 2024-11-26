@@ -1,0 +1,16 @@
+function main(){
+    a = input();
+    b = 20;
+    call callee(a,b);
+}
+
+function callee(m,n){
+    m = m - 1;
+    if(m >= 20){
+        n = m;
+    }else{
+        n = n - 1;
+    }
+    check_interval(m, 0, 254);
+    check_interval(n, 19, 19);
+}

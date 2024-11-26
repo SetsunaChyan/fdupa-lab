@@ -1,3 +1,4 @@
+function main(){
 x = input();
 y = input();
 
@@ -11,3 +12,4 @@ while (y >= 1) {
 }
 
 check_interval(y, 0, 11);
+}

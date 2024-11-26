@@ -1,9 +1,11 @@
+#include "IR/IR.h"
 #include "fdlang/AST.h"
 #include "fdlang/ASTTraversePrinter.h"
 #include "fdlang/parser.h"
 #include "fdlang/scanner.h"
 #include "fdlang/sema.h"
 
+#include "analysis/interAnalysis.h"
 #include "analysis/intervalAnalysis.h"
 #include "analysis/modelChecker.h"
 #include "analysis/relationalNumericalAnalysis.h"
@@ -40,6 +42,7 @@ int main(int argc, char *argv[]) {
                      "[-modelchecker] "
                      "[-interval-analysis] "
                      "[-zone-analysis] "
+                     "[-inter-analysis] "
                      "[-dumpir] "
                      "path-to-src-file"
                   << std::endl;
@@ -58,6 +61,7 @@ int main(int argc, char *argv[]) {
     bool doDumpir = options.count("-dumpir");
     bool doIntervalAnalysis = options.count("-interval-analysis");
     bool doZoneAnalysis = options.count("-zone-analysis");
+    bool doInterAnalysis = options.count("-inter-analysis");
 
     std::string src = readSrc(filepath);
     fdlang::Scanner scanner(src);
@@ -85,28 +89,34 @@ int main(int argc, char *argv[]) {
         modelChecker.dumpResult(std::cout);
     }
 
-    if (doIntervalAnalysis || doZoneAnalysis || doDumpir) {
-        fdlang::IR::IRBuilder irBuilder(root);
-        fdlang::IR::Insts insts = irBuilder.build();
+    fdlang::IR::IRBuilder irBuilder(root);
+    fdlang::IR::Functions funcs = irBuilder.build();
 
-        if (doDumpir) {
-            for (auto inst : insts) {
-                inst->dump(std::cout);
-                std::cout << std::endl;
-            }
+    if (doDumpir) {
+        for (auto func : funcs) {
+            func->dump(std::cout);
+            std::cout << std::endl;
         }
+    }
 
+    if (doIntervalAnalysis || doZoneAnalysis) {
         if (doIntervalAnalysis) {
-            fdlang::analysis::IntervalAnalysis analysis(insts);
+            fdlang::analysis::IntervalAnalysis analysis(funcs);
             analysis.run();
             analysis.dumpResult(std::cout);
         }
 
         if (doZoneAnalysis) {
-            fdlang::analysis::RelationalNumericalAnalysis analysis(insts);
+            fdlang::analysis::RelationalNumericalAnalysis analysis(funcs);
             analysis.run();
             analysis.dumpResult(std::cout);
         }
+    }
+
+    if (doInterAnalysis) {
+        fdlang::analysis::InterAnalysis analysis(funcs);
+        analysis.run();
+        analysis.dumpResult(std::cout);
     }
 
     return 0;

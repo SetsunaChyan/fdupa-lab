@@ -8,9 +8,12 @@ namespace fdlang::analysis {
 class DataflowAnalysis {
 protected:
     IR::Insts insts;
+    IR::Functions funcs;
 
 public:
-    DataflowAnalysis(const IR::Insts &insts) : insts(insts) {}
+    DataflowAnalysis(const IR::Functions &funcs) : funcs(funcs) {
+        insts = funcs[0]->getInsts();
+    }
 
     virtual void run() = 0;
 

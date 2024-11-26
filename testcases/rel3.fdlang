@@ -1,3 +1,4 @@
+function main(){
 i = 50;
 j = 100;
 
@@ -7,3 +8,4 @@ while(i < 100) {
 }
 
 check_interval(j, 150, 150);
+}

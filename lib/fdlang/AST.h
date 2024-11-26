@@ -16,6 +16,9 @@ enum class ASTNodeType {
     WHILE_STMT,
     CHECK_STMT,
     NOP_STMT,
+    CALL_STMT,
+    FUNCTION,
+    FUNCTIONS
 };
 
 class ASTVisitor;
@@ -31,6 +34,7 @@ public:
     virtual ~ASTNode() {}
 
     virtual void accept(ASTVisitor *visitor) = 0;
+    virtual void addCallee(ASTNode *nodes) = 0;
 };
 
 class Stmts : public ASTNode {
@@ -46,6 +50,7 @@ public:
     }
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override;
 
     void addChild(ASTNode *node);
 };
@@ -62,6 +67,7 @@ public:
     ~Cond() override {}
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
 };
 
 class BinaryAssignStmt : public ASTNode {
@@ -77,6 +83,7 @@ public:
     ~BinaryAssignStmt() override {}
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
 };
 
 class UnaryAssignStmt : public ASTNode {
@@ -90,6 +97,7 @@ public:
     ~UnaryAssignStmt() override {}
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
 };
 
 class IfStmt : public ASTNode {
@@ -110,6 +118,7 @@ public:
     }
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
 };
 
 class WhileStmt : public ASTNode {
@@ -127,6 +136,7 @@ public:
     }
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
 };
 
 class CheckStmt : public ASTNode {
@@ -142,6 +152,7 @@ public:
     ~CheckStmt() override {}
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
 };
 
 class NopStmt : public ASTNode {
@@ -151,6 +162,72 @@ public:
     ~NopStmt() override {}
 
     virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
+};
+
+class FunctionNode;
+class CallStmt : public ASTNode {
+public:
+    Token calleeName;
+    std::vector<Token> args;
+    FunctionNode *callee;
+
+    CallStmt(size_t label, const Token calleeName,
+             const std::vector<Token> &args)
+        : ASTNode(ASTNodeType::CALL_STMT, label), calleeName(calleeName),
+          args(args) {
+        callee = nullptr;
+    }
+
+    ~CallStmt() override {}
+
+    virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override;
+};
+
+class FunctionNode : public ASTNode {
+public:
+    Token funcName;
+    std::vector<Token> args;
+    ASTNode *body;
+    bool root;
+
+    FunctionNode(size_t label, const Token funcName,
+                 const std::vector<Token> &args, ASTNode *body)
+        : ASTNode(ASTNodeType::FUNCTION, label), funcName(funcName), args(args),
+          body(body) {
+        root = true;
+    }
+
+    ~FunctionNode() override {
+        if (body)
+            delete body;
+    }
+
+    virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override;
+    void setRoot(bool isRoot) { root = isRoot; }
+    bool isRoot() { return root; }
+};
+
+class FunctionNodes : public ASTNode {
+public:
+    std::vector<ASTNode *> children;
+
+    FunctionNodes(size_t label) : ASTNode(ASTNodeType::FUNCTIONS, label) {}
+
+    ~FunctionNodes() override {
+        for (ASTNode *child : children)
+            if (child)
+                delete child;
+    }
+
+    virtual void accept(ASTVisitor *visitor) override;
+    virtual void addCallee(ASTNode *nodes) override {};
+
+    void addChild(ASTNode *node);
+
+    void addCallee();
 };
 
 std::string getASTNodeSpelling(const ASTNode &node);

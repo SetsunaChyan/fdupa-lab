@@ -15,6 +15,9 @@ public:
     virtual void visit(WhileStmt *node) = 0;
     virtual void visit(CheckStmt *node) = 0;
     virtual void visit(NopStmt *node) = 0;
+    virtual void visit(CallStmt *node) = 0;
+    virtual void visit(FunctionNodes *node) = 0;
+    virtual void visit(FunctionNode *node) = 0;
 };
 
 } // namespace fdlang

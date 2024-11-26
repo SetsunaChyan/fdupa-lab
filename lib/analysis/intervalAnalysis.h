@@ -1,6 +1,7 @@
 #ifndef ANALYSIS_INTERVALANALYSIS_H
 #define ANALYSIS_INTERVALANALYSIS_H
 
+#include "IR/IR.h"
 #include "dataflowAnalysis.h"
 
 #include <algorithm>
@@ -22,6 +23,7 @@ struct Interval {
 };
 // variable -> value
 using States = std::map<std::string, Interval>;
+
 class IntervalAnalysis : public DataflowAnalysis {
 public:
     enum class ResultType { YES, NO, UNREACHABLE };
@@ -36,7 +38,7 @@ private:
     std::queue<size_t> worklist;
 
 public:
-    IntervalAnalysis(const IR::Insts &insts) : DataflowAnalysis(insts) {}
+    IntervalAnalysis(const IR::Functions &funcs) : DataflowAnalysis(funcs) {}
 
     // DO NOT MODIFY THIS FUNCTION
     void dumpResult(std::ostream &out) override {
