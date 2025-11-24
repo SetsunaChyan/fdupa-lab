@@ -45,9 +45,7 @@ bool RelationalNumericalAnalysis::joinInto(const States &x, States &y) {
 
 void RelationalNumericalAnalysis::run() {
 
-    // Collecting the name of variables
-    // std::cerr << "[zone-analysis] Collecting the name of variables"
-    //   << std::endl;
+    // 1. 收集变量名
     std::unordered_set<std::string> varsSet;
     for (auto inst : insts) {
         for (int i = 0; i < inst->getOperandSize(); i++) {
@@ -58,37 +56,49 @@ void RelationalNumericalAnalysis::run() {
     }
     std::vector<std::string> vars(varsSet.begin(), varsSet.end());
 
-    // Initializing the states
-    // std::cerr << "[zone-analysis] Initializing the states" << std::endl;
+    // 2. 为所有 label 建立映射，并找到 entryLabel / maxLabel
+    std::map<size_t, IR::Inst*> label2Inst;
+    size_t maxLabel = 0;
+    size_t entryLabel = (size_t)-1;
+
+    for (auto inst : insts) {
+        size_t label = inst->getLabel();
+        label2Inst[label] = inst;
+        maxLabel = std::max(maxLabel, label);
+        entryLabel = std::min(entryLabel, label);
+    }
+
+    // 3. 初始化各个程序点的状态
     States initState(vars, true), bottomState(vars, false);
     for (auto inst : insts) {
         size_t label = inst->getLabel();
-        if (label == 0)
+        if (label == entryLabel)
             inputStates[label] = initState;
         else
             inputStates[label] = bottomState;
     }
 
-    // Worklist algorithm
-    // std::cerr << "[zone-analysis] Worklist algorithm" << std::endl;
-    std::vector<bool> inQueue(insts.size(), false);
+    // 4. Worklist 算法
+    std::vector<bool> inQueue(maxLabel + 1, false); 
     std::queue<size_t> q;
-    q.push(0), inQueue[0] = true;
+    q.push(entryLabel);
+    inQueue[entryLabel] = true;
 
-    auto tryToEnqueue = [&](const States &outputState, const size_t succ) {
-        if (joinInto(outputState, inputStates[succ]) && !inQueue[succ]) {
-            inQueue[succ] = true;
-            q.push(succ);
+    auto tryToEnqueue = [&](const States &outputState, const size_t succLabel) {
+        if (joinInto(outputState, inputStates[succLabel]) && !inQueue[succLabel]) {
+            inQueue[succLabel] = true;
+            q.push(succLabel);
         }
     };
 
     while (!q.empty()) {
-        size_t now = q.front();
+        size_t nowLabel = q.front();
         q.pop();
-        inQueue[now] = false;
+        inQueue[nowLabel] = false;
 
-        IR::Inst *inst = insts[now];
-        States &inputState = inputStates[now];
+        // 用 label 查 Inst，而不是 insts[nowLabel]
+        IR::Inst *inst = label2Inst[nowLabel];
+        States &inputState = inputStates[nowLabel];
         States outputState;
 
         if (inst->getInstType() == IR::InstType::IfInst) {
@@ -97,13 +107,13 @@ void RelationalNumericalAnalysis::run() {
 
             // false branch
             outputState = transferIfStmt(ifInst, inputState, false);
-            succ = inst->getSuccessors()[0]->getLabel();
+            succ = ifInst->getSuccessors()[0]->getLabel();
             if (!outputState.isEmpty())
                 tryToEnqueue(outputState, succ);
 
             // true branch
             outputState = transferIfStmt(ifInst, inputState, true);
-            succ = inst->getSuccessors()[1]->getLabel();
+            succ = ifInst->getSuccessors()[1]->getLabel();
             if (!outputState.isEmpty())
                 tryToEnqueue(outputState, succ);
 
@@ -132,8 +142,7 @@ void RelationalNumericalAnalysis::run() {
         }
     }
 
-    // Answering the queries
-    // std::cerr << "[zone-analysis] Answering the queries" << std::endl;
+    // 5. 回答 CheckIntervalInst 查询
     for (auto inst : insts) {
         if (inst->getInstType() != IR::InstType::CheckIntervalInst)
             continue;
@@ -142,26 +151,18 @@ void RelationalNumericalAnalysis::run() {
         long long l = checkInst->getOperand(1)->getAsNumber();
         long long r = checkInst->getOperand(2)->getAsNumber();
 
-        if (inputStates[checkInst->getLabel()].isEmpty()) {
+        size_t label = checkInst->getLabel();
+
+        if (inputStates[label].isEmpty()) {
             results[checkInst] = ResultType::UNREACHABLE;
             continue;
         }
 
         IntervalDomain interval =
-            inputStates[inst->getLabel()].projection(variable);
+            inputStates[label].projection(variable);
         if (l <= interval.l && interval.r <= r)
             results[checkInst] = ResultType::YES;
         else
             results[checkInst] = ResultType::NO;
     }
-
-    // For debug, dumping the states
-    // std::cerr << "[zone-analysis] Dumping the states" << std::endl;
-    // for (auto inst : insts) {
-    //     inputStates[inst->getLabel()].dump(std::cerr);
-    //     inst->dump(std::cerr);
-    //     std::cerr << std::endl;
-    // }
-
-    // std::cerr << "[zone-analysis] End of analysis" << std::endl << std::endl;
 }
